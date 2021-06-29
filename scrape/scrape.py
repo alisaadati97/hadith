@@ -7,6 +7,7 @@ import time
 
 class Hadith():
     def __init__(self):
+        
         self.driver = webdriver.Chrome('./chromedriver')
         base_id = 48113
         self.source_id = 48113
@@ -23,6 +24,7 @@ class Hadith():
         self.len_refrence_headers_divs = len(self.refrence_hedears_div.find_elements_by_class_name("mat-tab-label"))
 
     def hadith_page(self):
+        
         self.driver.get(self.URL)
         self.get_buttons()
         self.get_headers()
@@ -63,24 +65,33 @@ class Hadith():
         hadith_tellers = hadith.find_elements_by_tag_name("exporter")
         for teller in hadith_tellers:
             print(teller.text)
-
-        
-    
+  
     def get_hadith_translation(self):
         
         translation_header_div = self.driver.find_element_by_id("mat-tab-label-1-0")
         
         self.driver.execute_script("arguments[0].scrollIntoView();", translation_header_div)
         time.sleep(2)
-        translation_div = self.driver.find_elements_by_class_name("mat-tab-body-wrapper")[-1]
-        translations = translation_div.find_elements_by_class_name("toggle-content")
-        import pdb;pdb.set_trace()
+        translation_divs = self.driver.find_elements_by_class_name("mat-tab-body-wrapper")[-1]
+        translations = translation_divs.find_elements_by_class_name("toggle-content")
+        
         for translation in translations:
             translation_refrence = translation.find_element_by_tag_name("h3")
             translation_text = translation.find_element_by_tag_name("p")
-            #import pdb;pdb.set_trace()
+            print(translation_refrence.text)
+    
+    def get_hadith_explaination(self):
+        explaination_header_div = self.driver.find_element_by_id("mat-tab-label-1-1")
+        explaination_header_div.click()
+        time.sleep(2)
 
-
+        explaination_divs = self.driver.find_elements_by_class_name("mat-tab-body-wrapper")[-1]
+        explainations = explaination_divs.find_elements_by_class_name("toggle-content")
+        for explaination in explainations:
+            explaination_refrence = explaination.find_element_by_tag_name("h3")
+            explaination_text = explaination.find_element_by_tag_name("p")
+            print(explaination_refrence.text)
+        
     def iterate_in_headers(self):
         step_counter = 0
         for i in range(self.len_refrence_headers_divs):
@@ -89,15 +100,19 @@ class Hadith():
                 if not "disabled" in button_after_class:
                     self.button_refrence_headers_after.click()
                 step_counter = i
-
+            #TODO check if the hadith data is not duplicated
             self.extract_ref(i)
             time.sleep(3)
             self.get_hadith_data()
             time.sleep(3)
             self.get_hadith_translation()
             time.sleep(3)
+            self.get_hadith_explaination()
+            time.sleep(3)
 
         self.driver.close()    
+
+
 Hadith()
 # with open("test.txt",'a',encoding = 'utf-8') as f:
 #     print(f"------------ iterate {i}")
