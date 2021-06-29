@@ -3,7 +3,13 @@ from selenium.webdriver.common.action_chains import ActionChains
 
 import time  
 
+import os
+import django
 
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'hadith.settings')
+django.setup()
+
+from scrape.models import *
 
 class Hadith():
     def __init__(self):
