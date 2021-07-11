@@ -17,8 +17,9 @@ class Hadith():
         self.driver = webdriver.Chrome('./chromedriver')
         base_id = 48113
         self.source_id = 48113
+        self.base_group_id = 0
         self.URL = f"https://hadith.inoor.ir/fa/hadith/{base_id}"
-        
+
         self.hadith_page()
     
     def get_buttons(self):
@@ -55,11 +56,17 @@ class Hadith():
         volume = refrence.pop().replace("ج","")
         name = " ".join(refrence)
         
+        print(f"########## extract_ref {i}")
         print(f" ref name : {name} | vol : {volume} | page : {page} ")
-
+        # self.refrence_obj  = HadithReference.objects.create(
+        #         hadith = self.hadith_obj ,
+        #         name = name , 
+        #         volume = volume ,
+        #         page = page ,
+        #         )
         span.click()       
 
-    def get_hadith_data(self):
+    def get_hadith_data(self,i):
         
         hadith = self.driver.find_element_by_class_name("mat-tab-body-wrapper").find_element_by_class_name("mat-tab-body-active")
         h2s = hadith.find_elements_by_tag_name("h2")
@@ -69,8 +76,31 @@ class Hadith():
         hadith_text = hadith.find_element_by_tag_name("hadith").text
 
         hadith_tellers = hadith.find_elements_by_tag_name("exporter")
+
+        print(f"########## get_hadith_data {i} self.base_group_id {self.base_group_id}")
+        print(f"""
+         hadith_identifier {hadith_identifier} -- 
+         hadith_teller {hadith_teller} --
+         hadith_text {hadith_text}
+         """)
         for teller in hadith_tellers:
-            print(teller.text)
+            print(f"########## teller.text {teller.text}")
+            
+        #TODO have a change in teller names and hadith tellers
+        # for teller in hadith_tellers:
+        #     self.teller_obj  = Teller.objects.get(name=teller.text)
+        #     self.hadithteller_obj  = HadithTeller.objects.create(
+        #         hadith = self.hadith_obj ,
+        #         teller = self.teller_obj  , 
+        #         )
+        #     print(teller.text)
+        # if i == 0 :
+        #     self.base_group_id = hadith_identifier
+        
+        # self.hadith_obj.text = hadith_text
+        # self.hadith_obj.ingroup_by_id = self.base_group_id
+        # self.hadith_obj.source_url = f"https://hadith.inoor.ir/fa/hadith/{hadith_identifier}"
+        # self.hadith_obj.source_identifier = hadith_identifier
   
     def get_hadith_translation(self):
         
@@ -81,6 +111,8 @@ class Hadith():
         translation_divs = self.driver.find_elements_by_class_name("mat-tab-body-wrapper")[-1]
         translations = translation_divs.find_elements_by_class_name("toggle-content")
         
+        print(f"##########  self.get_hadith_translation ")
+
         for translation in translations:
             translation_refrence = translation.find_element_by_tag_name("h3")
             translation_text = translation.find_element_by_tag_name("p")
@@ -97,6 +129,7 @@ class Hadith():
             explaination_refrence = explaination.find_element_by_tag_name("h3")
             explaination_text = explaination.find_element_by_tag_name("p")
             print(explaination_refrence.text)
+            
         
     def iterate_in_headers(self):
         step_counter = 0
@@ -107,9 +140,15 @@ class Hadith():
                     self.button_refrence_headers_after.click()
                 step_counter = i
             #TODO check if the hadith data is not duplicated
+            # self.hadith_obj , created = Hadith.objects.get_or_create(
+            #     source_identifier=self.source_id
+            #     )
+            # if not created :
+            #     continue
+            
             self.extract_ref(i)
             time.sleep(3)
-            self.get_hadith_data()
+            self.get_hadith_data(i)
             time.sleep(3)
             self.get_hadith_translation()
             time.sleep(3)
