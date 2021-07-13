@@ -4,6 +4,7 @@ from selenium.webdriver.common.action_chains import ActionChains
 import time  
 from unidecode import unidecode
 import os
+from random import randint
 
 import django
 
@@ -34,7 +35,8 @@ class Hadithclass():
         div = self.driver.find_element_by_id(f"mat-tab-label-0-{i}")
         span = div.find_element_by_tag_name("span")
         span.click()  
-        time.sleep(1.5)
+        print("go_to_hadith_by_header")
+        time.sleep(randint(1,3))
     
     def hadith_page(self):
         
@@ -42,12 +44,16 @@ class Hadithclass():
         self.get_buttons()
         self.get_headers()
 
-        time.sleep(1)
+        time.sleep(randint(2,5))
         
         button_before_class = self.button_refrence_headers_before.get_attribute("class")
 
+        cnt = 0
         while not "disabled" in button_before_class:
             self.button_refrence_headers_before.click()
+            cnt += 1 
+            if cnt > 10 : 
+                break
         
         self.iterate_in_headers()
     
@@ -119,7 +125,7 @@ class Hadithclass():
         translation_header_div = self.driver.find_element_by_id("mat-tab-label-1-0")
         
         self.driver.execute_script("arguments[0].scrollIntoView();", translation_header_div)
-        time.sleep(2)
+        time.sleep(1.5)
         translation_divs = self.driver.find_elements_by_class_name("mat-tab-body-wrapper")[-1]
         translations = translation_divs.find_elements_by_class_name("toggle-content")
         
@@ -147,7 +153,7 @@ class Hadithclass():
     def get_hadith_explaination(self):
         explaination_header_div = self.driver.find_element_by_id("mat-tab-label-1-1")
         explaination_header_div.click()
-        time.sleep(2)
+        time.sleep(1.5)
 
         explaination_divs = self.driver.find_elements_by_class_name("mat-tab-body-wrapper")[-1]
         explainations = explaination_divs.find_elements_by_class_name("toggle-content")
@@ -178,6 +184,7 @@ class Hadithclass():
                 if not "disabled" in button_after_class:
                     self.button_refrence_headers_after.click()
                 step_counter = i
+            print("before go_to_hadith_by_header")
             self.go_to_hadith_by_header(i)
             
             isduplicated = self.get_hadith_data(i)
@@ -185,17 +192,19 @@ class Hadithclass():
                 #print(f"step {i} continuew occured {self.hadith_obj}")
                 continue
             print(f"step {i} ########### source id : {self.hadith_obj}")
-            time.sleep(3)
+            time.sleep(randint(2,5))
             self.extract_ref(i)
-            time.sleep(3)            
+            time.sleep(randint(1,3))            
             self.get_hadith_translation()
-            time.sleep(3)
+            time.sleep(randint(1,3))
             self.get_hadith_explaination()
-            time.sleep(3)
+            time.sleep(randint(1,3))
             print("")
 
         #self.driver.close()    
 
+#id start 48113
+#48129 problem
 hadithobj = Hadithclass()
-for id in range(48113 , 500000):
+for id in range(48143 , 500000):
     hadithobj.start_scrape(id)
