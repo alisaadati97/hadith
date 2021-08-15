@@ -5,11 +5,12 @@ from django.apps import apps
 from .models import * 
 
 class  hadithAdmin(admin.ModelAdmin):
-    list_display=('source_identifier','ingroup_by_id','source_url')
+    list_display=('source_identifier','group_id','source_url')
+
+class  hadithReferenceAdmin(admin.ModelAdmin):
+    list_display=('name','hadith',"volume",'page')
 
 
-class  translationAdmin(admin.ModelAdmin):
-    list_display=('hadith','translation_text')
 
 
 class  tellerAdmin(admin.ModelAdmin):
@@ -21,24 +22,28 @@ class  tellernameAdmin(admin.ModelAdmin):
 
 class  hadithTellerAdmin(admin.ModelAdmin):
     list_display=('teller','hadith')
-class  hadithReferenceAdmin(admin.ModelAdmin):
-    list_display=('name','hadith',"volume",'page')
+
+class  translationAdmin(admin.ModelAdmin):
+    list_display=('hadith','text')
 
 
 class  translationReferenceAdmin(admin.ModelAdmin):
     list_display=('name','hadith',"volume",'page')
-class  hadithExplainAdmin(admin.ModelAdmin):
-    list_display=('name','hadith',"volume",'page')
+
+class  hadithExplanationAdmin(admin.ModelAdmin):
+    list_display=('text','hadith')
 
 
 
 admin.site.register(Hadith, hadithAdmin)
-admin.site.register(Translation, translationAdmin)
+admin.site.register(HadithReference, hadithReferenceAdmin) 
+
+
 admin.site.register(Teller, tellerAdmin)
 admin.site.register(Tellername, tellernameAdmin)  
-
 admin.site.register(HadithTeller, hadithTellerAdmin)  
-admin.site.register(HadithReference, hadithReferenceAdmin)  
+ 
+admin.site.register(HadithTranslation, translationAdmin)
+admin.site.register(HadithTranslationReference, translationReferenceAdmin)  
 
-admin.site.register(TranslationReference, translationReferenceAdmin)  
-admin.site.register(HadithExplain, hadithExplainAdmin)  
+admin.site.register(HadithExplanation, hadithExplanationAdmin)  

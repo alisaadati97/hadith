@@ -24,6 +24,7 @@ class Hadithclass():
         self.hadith_page()
        
     def get_buttons(self):
+        
         self.button_refrence_headers_before = self.driver.find_element_by_xpath("/html/body/app-root/div/mat-sidenav-container/mat-sidenav-content/hadith/section/div[2]/div/mat-tab-group/mat-tab-header/div[1]")
         self.button_refrence_headers_after = self.driver.find_element_by_xpath("/html/body/app-root/div/mat-sidenav-container/mat-sidenav-content/hadith/section/div[2]/div/mat-tab-group/mat-tab-header/div[3]")
     
@@ -36,7 +37,7 @@ class Hadithclass():
         span = div.find_element_by_tag_name("span")
         span.click()  
         print("go_to_hadith_by_header")
-        time.sleep(randint(1,3))
+        time.sleep(randint(2,3))
     
     def hadith_page(self):
         
@@ -125,7 +126,7 @@ class Hadithclass():
         translation_header_div = self.driver.find_element_by_id("mat-tab-label-1-0")
         
         self.driver.execute_script("arguments[0].scrollIntoView();", translation_header_div)
-        time.sleep(1.5)
+        time.sleep(.5)
         translation_divs = self.driver.find_elements_by_class_name("mat-tab-body-wrapper")[-1]
         translations = translation_divs.find_elements_by_class_name("toggle-content")
         
@@ -153,7 +154,7 @@ class Hadithclass():
     def get_hadith_explaination(self):
         explaination_header_div = self.driver.find_element_by_id("mat-tab-label-1-1")
         explaination_header_div.click()
-        time.sleep(1.5)
+        time.sleep(.5)
 
         explaination_divs = self.driver.find_elements_by_class_name("mat-tab-body-wrapper")[-1]
         explainations = explaination_divs.find_elements_by_class_name("toggle-content")
@@ -196,15 +197,16 @@ class Hadithclass():
             self.extract_ref(i)
             time.sleep(randint(1,3))            
             self.get_hadith_translation()
-            time.sleep(randint(1,3))
+            #time.sleep(randint(1,3))
             self.get_hadith_explaination()
-            time.sleep(randint(1,3))
+            #time.sleep(randint(1,3))
             print("")
 
         #self.driver.close()    
 
 #id start 48113
 #48129 problem
+#48158 problem
 hadithobj = Hadithclass()
-for id in range(48143 , 500000):
+for id in range(48167 , 500000):
     hadithobj.start_scrape(id)
