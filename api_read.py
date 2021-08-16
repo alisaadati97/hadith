@@ -27,29 +27,15 @@ def remove_html_tags(raw):
     cleantext = re.sub(cleanr, '', raw)
     return cleantext
 
-def get_hadith_data(hadith_id):
-
-    data = '{"hadithId":[' + str(hadith_id) + '],"searchPhrase":""}'
-    
-    response = requests.post('https://hadith.inoor.ir/service/api/elastic/ElasticHadithById', headers=headers, data=data)
-    resp = response.json()
-    resp = resp["data"][0]
-    
-    
-
-    groupTogetherList = resp["groupTogetherList"]
-    
+def save_hadith_data(hadith_id,resp):
+    groupTogetherList = resp["groupTogetherList"]   
     for hadith in groupTogetherList:
-
         hadith_url = f"https://hadith.inoor.ir/fa/hadith/{hadith['hadithId']}/translate"
-
-        #write to db
         hadith_obj , created  = Hadith.objects.get_or_create(
                                 source_identifier = hadith["hadithId"],
                                 group_id = hadith["groupId"],
                                 source_url = hadith_url
                                  )
-  
         if not created:
             continue
         hadith_obj.save()
@@ -59,13 +45,11 @@ def get_hadith_data(hadith_id):
                                         page = hadith["pageNum"] ,
                                         )
         hadithref_obj.save()
-
     hadith_obj  = Hadith.objects.get(
                                 source_identifier = hadith_id,
                                  )    
     hadith_obj.text = remove_html_tags(resp["text"])
     hadith_obj.save()
-
     for qael in resp["qaelList"]:
         teller_obj , created  = Teller.objects.get_or_create(
             name = qael["title"],
@@ -75,26 +59,11 @@ def get_hadith_data(hadith_id):
         )
         HadithTeller.objects.create(hadith=hadith_obj,teller=teller_obj)
 
-    resp["hasTranslate"]
-    resp["hasExplanation"]
-    resp["qaelTitleList"]
 
-    return resp['hasTranslate'] , resp['hasExplanation']
-
-def get_hadith_explanation(hadith_id):
-
-    data = '{"hadithId":[' + str(hadith_id) + '],"searchPhrase":"","searchIn":"explanation"}'
-    
-    response = requests.post('https://hadith.inoor.ir/service/api/elastic/ElasticHadithById', headers=headers, data=data)
-    resp = response.json()
-    resp = resp["data"][0]
-
-    hadith_obj  = Hadith.objects.get(
-                                source_identifier = hadith_id,
-                                 )   
+def save_hadith_explanation(hadith_id,resp):
+    hadith_obj  = Hadith.objects.get(source_identifier = hadith_id)   
 
     explanationList = resp["explanationList"]
-
     for explanation in explanationList:
 
         hadithexplain_obj = HadithExplanation.objects.create(hadith = hadith_obj )
@@ -108,21 +77,10 @@ def get_hadith_explanation(hadith_id):
         hadithexplainref_obj.page = explanation["pageNum"]
         hadithexplainref_obj.save()
 
-    
-def get_hadith_translation(hadith_id):
-
-    data = '{"hadithId":[' + str(hadith_id) + '],"searchPhrase":"","searchIn":"translate"}'
-    
-    response = requests.post('https://hadith.inoor.ir/service/api/elastic/ElasticHadithById', headers=headers, data=data)
-    resp = response.json()
-    resp = resp["data"][0]
-
-    hadith_obj  = Hadith.objects.get(
-                                source_identifier = hadith_id,
-                                 )
+def save_hadith_translation(hadith_id,resp):
+    hadith_obj  = Hadith.objects.get(source_identifier = hadith_id,)
 
     translateList = resp["translateList"]
-
     for translate in translateList:
 
         hadithtranslate_obj = HadithTranslation.objects.create(hadith = hadith_obj )
@@ -137,6 +95,40 @@ def get_hadith_translation(hadith_id):
         hadithtranslateref_obj.page = translate["pageNum"]
         hadithtranslateref_obj.volume = translate["vol"]
         hadithtranslateref_obj.save()
+
+def get_hadith_data(hadith_id):
+
+    data = '{"hadithId":[' + str(hadith_id) + '],"searchPhrase":""}'
+    
+    response = requests.post('https://hadith.inoor.ir/service/api/elastic/ElasticHadithById', headers=headers, data=data)
+    resp = response.json()
+    resp = resp["data"][0]
+
+    save_hadith_data(hadith_id,resp)
+
+    return resp['hasTranslate'] , resp['hasExplanation']
+
+def get_hadith_explanation(hadith_id):
+
+    data = '{"hadithId":[' + str(hadith_id) + '],"searchPhrase":"","searchIn":"explanation"}'
+    
+    response = requests.post('https://hadith.inoor.ir/service/api/elastic/ElasticHadithById', headers=headers, data=data)
+    resp = response.json()
+    resp = resp["data"][0]
+    
+    save_hadith_explanation(hadith_id,resp)
+    
+def get_hadith_translation(hadith_id):
+
+    data = '{"hadithId":[' + str(hadith_id) + '],"searchPhrase":"","searchIn":"translate"}'
+    
+    response = requests.post('https://hadith.inoor.ir/service/api/elastic/ElasticHadithById', headers=headers, data=data)
+    resp = response.json()
+    resp = resp["data"][0]
+
+    save_hadith_translation(hadith_id,resp)
+
+    
 
 hadith_id = 103907
 
