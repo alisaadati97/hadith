@@ -25,6 +25,9 @@ class HadithReference(models.Model):
 
 class Teller(models.Model):
     name = models.CharField(max_length=200,null=True, blank=True)
+    order = models.CharField(max_length=200,null=True, blank=True)
+    qael_id = models.CharField(max_length=200,null=True, blank=True)
+    qaelroleid = models.CharField(max_length=200,null=True, blank=True)
 
     def __str__(self):
         return f"{self.name}"
@@ -49,36 +52,37 @@ class HadithTranslation(models.Model):
     hadith = models.ForeignKey(Hadith,on_delete=models.CASCADE, null=True)
     language = models.CharField(max_length=200,null=True, blank=True)
     text = models.TextField(null=True, blank=True)
+    textwithoutformat = models.TextField(null=True, blank=True)
 
     def __str__(self):
         return f"{self.hadith}"
 
 class HadithTranslationReference(models.Model):
     hadith = models.ForeignKey(Hadith,on_delete=models.CASCADE, null=True)
-    text = models.TextField(null=True, blank=True)
-    name =  models.CharField(max_length=200,null=True, blank=True)
+    shorttitle =  models.CharField(max_length=200,null=True, blank=True)
+    maintitle =  models.CharField(max_length=200,null=True, blank=True)
     volume = models.PositiveIntegerField(null=True, blank=True)
     page = models.PositiveIntegerField(null=True, blank=True)
 
     def __str__(self):
-        return f"{self.name} - {self.volume} - {self.page} "
+        return f"{self.shorttitle} - {self.volume} - {self.page} "
 
 class HadithExplanation(models.Model):
     hadith = models.ForeignKey(Hadith,on_delete=models.CASCADE, null=True)
     text = models.TextField(null=True, blank=True)
+    textwithoutformat = models.TextField(null=True, blank=True)
 
     def __str__(self):
         return f"{self.hadith} "
 
 class HadithExplanationReference(models.Model):
-    hadith = models.ForeignKey(Hadith,on_delete=models.CASCADE, null=True)
-    text = models.TextField(null=True, blank=True)
-    name =  models.CharField(max_length=200,null=True, blank=True)
+    hadithexplain = models.ForeignKey(HadithExplanation,on_delete=models.CASCADE, null=True)
+    maintitle =  models.CharField(max_length=200,null=True, blank=True)
     volume = models.PositiveIntegerField(null=True, blank=True)
     page = models.PositiveIntegerField(null=True, blank=True)
 
     def __str__(self):
-        return f"{self.name} - {self.volume} - {self.page} "
+        return f"{self.maintitle} - {self.volume} - {self.page} "
 
 
 
