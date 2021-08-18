@@ -4,6 +4,8 @@ import re
 from time import sleep
 import logging
 import datetime
+import sys
+
 
 
 
@@ -27,6 +29,7 @@ headers = {
     'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.212 Safari/537.36',
     'DeviceType': 'web',
 }
+
 
 def remove_html_tags(raw):
      
@@ -102,7 +105,7 @@ def save_hadith_translation(hadith_id,resp):
         hadithtranslateref_obj.volume = translate["vol"]
         hadithtranslateref_obj.save()
 
-def get_hadith_data(hadith_id):
+def get_hadith_data(hadith_id, date):
 
     data = '{"hadithId":[' + str(hadith_id) + '],"searchPhrase":""}'
     
@@ -111,19 +114,24 @@ def get_hadith_data(hadith_id):
     if not resp["isSuccess"]:
         logging.info(f'hadith id : {hadith_id} {date} data notSuccess')
         return False , False
+    if response.status_code == 429 or response.status_code == 430 :
+        logging.info(f'hadith id : {hadith_id} {date} statuscode 429 or 430 occured and exit!')
+        sys.exit()
+    
     resp = resp["data"][0]
 
     save_hadith_data(hadith_id,resp)
 
     return resp['hasTranslate'] , resp['hasExplanation']
 
-def get_hadith_explanation(hadith_id):
+def get_hadith_explanation(hadith_id, date):
 
     data = '{"hadithId":[' + str(hadith_id) + '],"searchPhrase":"","searchIn":"explanation"}'
     
     response = requests.post('https://hadith.inoor.ir/service/api/elastic/ElasticHadithById', headers=headers, data=data)
     resp = response.json()
     if not resp["isSuccess"]:
+        
         logging.info(f'hadith id : {hadith_id} {date} explain notSuccess')
         return None 
 
@@ -131,7 +139,7 @@ def get_hadith_explanation(hadith_id):
     
     save_hadith_explanation(hadith_id,resp)
     
-def get_hadith_translation(hadith_id):
+def get_hadith_translation(hadith_id, date):
 
     data = '{"hadithId":[' + str(hadith_id) + '],"searchPhrase":"","searchIn":"translate"}'
     
@@ -148,13 +156,13 @@ def get_hadith_translation(hadith_id):
     
 
 if __name__ == "__main__":
-    hadith_id = 48168
+    hadith_id = 48207
     while True:
         date = datetime.datetime.now().strftime("%Y%m%d, %H:%M:%S")
         logging.info(f'hadith id : {hadith_id} {date}')
         
         try : 
-            t , e = get_hadith_data(hadith_id)
+            t , e = get_hadith_data(hadith_id , date)
         except:
             logging.error(f'first exception occured !!! hadith id : {hadith_id} {date}')
             hadith_id += 1 
@@ -162,20 +170,20 @@ if __name__ == "__main__":
 
         if t :
             try:
-                get_hadith_translation(hadith_id)
-                sleep(3)
+                get_hadith_translation(hadith_id, date)
+                sleep(15)
             except:
                 logging.error(f'second exception occured !!! hadith id : {hadith_id} {date}')
                 hadith_id += 1 
                 continue
         if e :
             try:
-                get_hadith_explanation(hadith_id)
-                sleep(3)
+                get_hadith_explanation(hadith_id, date)
+                sleep(15)
             except:
                 logging.error(f'third exception occured !!! hadith id : {hadith_id} {date}')
                 hadith_id += 1 
                 continue
         
-        sleep(5)
+        sleep(15)
         hadith_id += 1 
