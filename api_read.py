@@ -37,6 +37,11 @@ def remove_html_tags(raw):
     cleantext = re.sub(cleanr, '', raw)
     return cleantext
 
+def exit_if_banned(hadith_id, date ,status_code ):
+    if status_code == 429 or status_code == 430 :
+        logging.error(f'hadith id : {hadith_id} {date} statuscode 429 or 430 occured and exit!')
+        sys.exit()
+
 def save_hadith_data(hadith_id,resp):
     groupTogetherList = resp["groupTogetherList"]   
     for hadith in groupTogetherList:
@@ -105,85 +110,79 @@ def save_hadith_translation(hadith_id,resp):
         hadithtranslateref_obj.volume = translate["vol"]
         hadithtranslateref_obj.save()
 
+def get_response(hadith_id,date, data , data_type):
+    response = requests.post('https://hadith.inoor.ir/service/api/elastic/ElasticHadithById', 
+        headers=headers, data=data)
+    exit_if_banned(hadith_id, date ,response.status_code )
+
+    resp = response.json()
+
+    if data_type == "data":
+        if not resp["isSuccess"]:
+            logging.error(f'hadith id : {hadith_id} {date} {data_type} notSuccess')
+            return False , False
+        try : 
+            resp = resp["data"][0]
+        except:
+            logging.error(f'first exception occured !!! hadith id : {hadith_id} {date}')
+    
+    elif data_type == "explain":
+        if not resp["isSuccess"]:      
+            logging.error(f'hadith id : {hadith_id} {date} {data_type} notSuccess')
+            return None 
+        try : 
+            resp = resp["data"][0]
+        except:
+            logging.error(f'second exception occured !!! hadith id : {hadith_id} {date}')
+
+    elif data_type == "translate":
+        if not resp["isSuccess"]:
+            logging.error(f'hadith id : {hadith_id} {date} {data_type} notSuccess')
+            return None
+        try : 
+            resp = resp["data"][0]
+        except:
+            logging.error(f'third exception occured !!! hadith id : {hadith_id} {date}')
+   
+    
+    return resp
+    
+
 def get_hadith_data(hadith_id, date):
 
     data = '{"hadithId":[' + str(hadith_id) + '],"searchPhrase":""}'
-    
-    response = requests.post('https://hadith.inoor.ir/service/api/elastic/ElasticHadithById', headers=headers, data=data)
-    resp = response.json()
-    if not resp["isSuccess"]:
-        logging.info(f'hadith id : {hadith_id} {date} data notSuccess')
-        return False , False
-    if response.status_code == 429 or response.status_code == 430 :
-        logging.info(f'hadith id : {hadith_id} {date} statuscode 429 or 430 occured and exit!')
-        sys.exit()
-    
-    resp = resp["data"][0]
-
+    resp = get_response(hadith_id,date, data,'data')
     save_hadith_data(hadith_id,resp)
-
     return resp['hasTranslate'] , resp['hasExplanation']
 
 def get_hadith_explanation(hadith_id, date):
 
     data = '{"hadithId":[' + str(hadith_id) + '],"searchPhrase":"","searchIn":"explanation"}'
-    
-    response = requests.post('https://hadith.inoor.ir/service/api/elastic/ElasticHadithById', headers=headers, data=data)
-    resp = response.json()
-    if not resp["isSuccess"]:
-        
-        logging.info(f'hadith id : {hadith_id} {date} explain notSuccess')
-        return None 
-
-    resp = resp["data"][0]
-    
+    resp = get_response(hadith_id,date, data,'explain')
     save_hadith_explanation(hadith_id,resp)
     
 def get_hadith_translation(hadith_id, date):
-
     data = '{"hadithId":[' + str(hadith_id) + '],"searchPhrase":"","searchIn":"translate"}'
-    
-    response = requests.post('https://hadith.inoor.ir/service/api/elastic/ElasticHadithById', headers=headers, data=data)
-    resp = response.json()
-    if not resp["isSuccess"]:
-        logging.info(f'hadith id : {hadith_id} {date} translate notSuccess')
-        return None
-        
-    resp = resp["data"][0]
-
+    resp = get_response(hadith_id,date, data,'translate') 
     save_hadith_translation(hadith_id,resp)
 
     
 
 if __name__ == "__main__":
-    hadith_id = 48207
+    hadith_id = 48303
+    logging.info(f'new run')
     while True:
+        logging.info(f'')
         date = datetime.datetime.now().strftime("%Y%m%d, %H:%M:%S")
         logging.info(f'hadith id : {hadith_id} {date}')
         
-        try : 
-            t , e = get_hadith_data(hadith_id , date)
-        except:
-            logging.error(f'first exception occured !!! hadith id : {hadith_id} {date}')
-            hadith_id += 1 
-            continue
+        t , e = get_hadith_data(hadith_id , date)
 
         if t :
-            try:
-                get_hadith_translation(hadith_id, date)
-                sleep(15)
-            except:
-                logging.error(f'second exception occured !!! hadith id : {hadith_id} {date}')
-                hadith_id += 1 
-                continue
+            get_hadith_translation(hadith_id, date)
+            sleep(15)
         if e :
-            try:
-                get_hadith_explanation(hadith_id, date)
-                sleep(15)
-            except:
-                logging.error(f'third exception occured !!! hadith id : {hadith_id} {date}')
-                hadith_id += 1 
-                continue
-        
+            get_hadith_explanation(hadith_id, date)
+            sleep(15) 
         sleep(15)
         hadith_id += 1 
