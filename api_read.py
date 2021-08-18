@@ -1,6 +1,11 @@
 import requests
 import os
 import re
+from time import sleep
+import logging
+import datetime
+
+
 
 import django
 
@@ -8,6 +13,8 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'hadith.settings')
 django.setup()
 
 from scrape.models import *
+
+logging.basicConfig(filename='log.log',filemode='a',datefmt='%H:%M:%S', level=logging.DEBUG)
 
 headers = {
     'sec-ch-ua': '" Not A;Brand";v="99", "Chromium";v="90", "Google Chrome";v="90"',
@@ -59,7 +66,6 @@ def save_hadith_data(hadith_id,resp):
         )
         HadithTeller.objects.create(hadith=hadith_obj,teller=teller_obj)
 
-
 def save_hadith_explanation(hadith_id,resp):
     hadith_obj  = Hadith.objects.get(source_identifier = hadith_id)   
 
@@ -102,6 +108,9 @@ def get_hadith_data(hadith_id):
     
     response = requests.post('https://hadith.inoor.ir/service/api/elastic/ElasticHadithById', headers=headers, data=data)
     resp = response.json()
+    if not resp["isSuccess"]:
+        logging.info(f'hadith id : {hadith_id} {date} data notSuccess')
+        return False , False
     resp = resp["data"][0]
 
     save_hadith_data(hadith_id,resp)
@@ -114,6 +123,10 @@ def get_hadith_explanation(hadith_id):
     
     response = requests.post('https://hadith.inoor.ir/service/api/elastic/ElasticHadithById', headers=headers, data=data)
     resp = response.json()
+    if not resp["isSuccess"]:
+        logging.info(f'hadith id : {hadith_id} {date} explain notSuccess')
+        return None 
+
     resp = resp["data"][0]
     
     save_hadith_explanation(hadith_id,resp)
@@ -124,17 +137,45 @@ def get_hadith_translation(hadith_id):
     
     response = requests.post('https://hadith.inoor.ir/service/api/elastic/ElasticHadithById', headers=headers, data=data)
     resp = response.json()
+    if not resp["isSuccess"]:
+        logging.info(f'hadith id : {hadith_id} {date} translate notSuccess')
+        return None
+        
     resp = resp["data"][0]
 
     save_hadith_translation(hadith_id,resp)
 
     
 
-hadith_id = 103907
+if __name__ == "__main__":
+    hadith_id = 48168
+    while True:
+        date = datetime.datetime.now().strftime("%Y%m%d, %H:%M:%S")
+        logging.info(f'hadith id : {hadith_id} {date}')
+        
+        try : 
+            t , e = get_hadith_data(hadith_id)
+        except:
+            logging.error(f'first exception occured !!! hadith id : {hadith_id} {date}')
+            hadith_id += 1 
+            continue
 
-t , e = get_hadith_data(hadith_id)
-
-if t :
-    get_hadith_translation(hadith_id)
-if e :
-    get_hadith_explanation(hadith_id)
+        if t :
+            try:
+                get_hadith_translation(hadith_id)
+                sleep(3)
+            except:
+                logging.error(f'second exception occured !!! hadith id : {hadith_id} {date}')
+                hadith_id += 1 
+                continue
+        if e :
+            try:
+                get_hadith_explanation(hadith_id)
+                sleep(3)
+            except:
+                logging.error(f'third exception occured !!! hadith id : {hadith_id} {date}')
+                hadith_id += 1 
+                continue
+        
+        sleep(5)
+        hadith_id += 1 
