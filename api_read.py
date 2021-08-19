@@ -29,7 +29,9 @@ headers = {
     'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.212 Safari/537.36',
     'DeviceType': 'web',
 }
-
+proxies = {
+        'http': 'http://175.143.37.162:80',
+}
 
 def remove_html_tags(raw):
      
@@ -43,7 +45,12 @@ def exit_if_banned(hadith_id, date ,status_code ):
         sys.exit()
 
 def save_hadith_data(hadith_id,resp):
-    groupTogetherList = resp["groupTogetherList"]   
+    groupTogetherList = resp["groupTogetherList"]
+    for hadith in groupTogetherList:
+        if hadith_id == hadith['hadithId']:
+            break 
+        logging.error(f'hadith id : {hadith_id} is having another url !!')
+        return 
     for hadith in groupTogetherList:
         hadith_url = f"https://hadith.inoor.ir/fa/hadith/{hadith['hadithId']}/translate"
         hadith_obj , created  = Hadith.objects.get_or_create(
@@ -60,6 +67,7 @@ def save_hadith_data(hadith_id,resp):
                                         page = hadith["pageNum"] ,
                                         )
         hadithref_obj.save()
+    
     hadith_obj  = Hadith.objects.get(
                                 source_identifier = hadith_id,
                                  )    
@@ -112,7 +120,8 @@ def save_hadith_translation(hadith_id,resp):
 
 def get_response(hadith_id,date, data , data_type):
     response = requests.post('https://hadith.inoor.ir/service/api/elastic/ElasticHadithById', 
-        headers=headers, data=data)
+        headers=headers, data=data , 
+        proxies=proxies )
     exit_if_banned(hadith_id, date ,response.status_code )
 
     resp = response.json()
@@ -169,7 +178,7 @@ def get_hadith_translation(hadith_id, date):
     
 
 if __name__ == "__main__":
-    hadith_id = 48303
+    hadith_id = 48316
     logging.info(f'new run')
     while True:
         logging.info(f'')
@@ -180,9 +189,9 @@ if __name__ == "__main__":
 
         if t :
             get_hadith_translation(hadith_id, date)
-            sleep(15)
+            sleep(20)
         if e :
             get_hadith_explanation(hadith_id, date)
-            sleep(15) 
-        sleep(15)
+            sleep(20) 
+        sleep(20)
         hadith_id += 1 
