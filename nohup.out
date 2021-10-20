@@ -1,0 +1,160 @@
+  File "api_read.py", line 185
+    if cnt = 80 :
+           ^
+SyntaxError: invalid syntax
+  File "api_read.py", line 185
+    if cnt = 80 :
+           ^
+SyntaxError: invalid syntax
+Traceback (most recent call last):
+  File "api_read.py", line 194, in <module>
+    t , e = get_hadith_data(hadith_id , date)
+  File "api_read.py", line 163, in get_hadith_data
+    resp = get_response(hadith_id,date, data,'data')
+  File "api_read.py", line 130, in get_response
+    if not resp["isSuccess"]:
+KeyError: 'isSuccess'
+Traceback (most recent call last):
+  File "api_read.py", line 197, in <module>
+    t , e = get_hadith_data(hadith_id , date)
+  File "api_read.py", line 163, in get_hadith_data
+    resp = get_response(hadith_id,date, data,'data')
+  File "api_read.py", line 130, in get_response
+    if not resp["isSuccess"]:
+KeyError: 'isSuccess'
+@#@@@@@@@Traceback (most recent call last):
+  File "api_read.py", line 197, in <module>
+    t , e = get_hadith_data(hadith_id , date)
+  File "api_read.py", line 163, in get_hadith_data
+    resp = get_response(hadith_id,date, data,'data')
+  File "api_read.py", line 130, in get_response
+    if not resp["isSuccess"]:
+KeyError: 'isSuccess'
+Traceback (most recent call last):
+  File "api_read.py", line 197, in <module>
+    t , e = get_hadith_data(hadith_id , date)
+  File "api_read.py", line 163, in get_hadith_data
+    resp = get_response(hadith_id,date, data,'data')
+  File "api_read.py", line 130, in get_response
+    if not resp["isSuccess"]:
+KeyError: 'isSuccess'
+Traceback (most recent call last):
+  File "api_read.py", line 201, in <module>
+    t , e = get_hadith_data(hadith_id , date)
+  File "api_read.py", line 168, in get_hadith_data
+    save_hadith_data(hadith_id,resp)
+  File "api_read.py", line 48, in save_hadith_data
+    groupTogetherList = resp["groupTogetherList"]
+TypeError: tuple indices must be integers or slices, not str
+Traceback (most recent call last):
+  File "api_read.py", line 201, in <module>
+    t , e = get_hadith_data(hadith_id , date)
+  File "api_read.py", line 168, in get_hadith_data
+    save_hadith_data(hadith_id,resp)
+  File "api_read.py", line 48, in save_hadith_data
+    groupTogetherList = resp["groupTogetherList"]
+TypeError: tuple indices must be integers or slices, not str
+@@@@Traceback (most recent call last):
+  File "api_read.py", line 197, in <module>
+    t , e = get_hadith_data(hadith_id , date)
+  File "api_read.py", line 163, in get_hadith_data
+    resp = get_response(hadith_id,date, data,'data')
+  File "api_read.py", line 130, in get_response
+    if not resp["isSuccess"]:
+KeyError: 'isSuccess'
+@@@Traceback (most recent call last):
+  File "api_read.py", line 199, in <module>
+    t , e = get_hadith_data(hadith_id , date)
+  File "api_read.py", line 165, in get_hadith_data
+    resp = get_response(hadith_id,date, data,'data')
+  File "api_read.py", line 132, in get_response
+    if not resp["isSuccess"]:
+KeyError: 'isSuccess'
+Traceback (most recent call last):
+  File "api_read.py", line 199, in <module>
+    t , e = get_hadith_data(hadith_id , date)
+  File "api_read.py", line 166, in get_hadith_data
+    save_hadith_data(hadith_id,resp)
+  File "api_read.py", line 48, in save_hadith_data
+    groupTogetherList = resp["groupTogetherList"]
+KeyError: 'groupTogetherList'
+@@@Traceback (most recent call last):
+  File "api_read.py", line 200, in <module>
+    t , e = get_hadith_data(hadith_id , date)
+  File "api_read.py", line 165, in get_hadith_data
+    resp = get_response(hadith_id,date, data,'data')
+  File "api_read.py", line 132, in get_response
+    if not resp["isSuccess"]:
+KeyError: 'isSuccess'
+@@@@Traceback (most recent call last):
+  File "/usr/lib/python3/dist-packages/urllib3/connection.py", line 144, in _new_conn
+    (self.host, self.port), self.timeout, **extra_kw)
+  File "/usr/lib/python3/dist-packages/urllib3/util/connection.py", line 83, in create_connection
+    raise err
+  File "/usr/lib/python3/dist-packages/urllib3/util/connection.py", line 73, in create_connection
+    sock.connect(sa)
+OSError: [Errno 113] No route to host
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/usr/lib/python3/dist-packages/urllib3/connectionpool.py", line 601, in urlopen
+    chunked=chunked)
+  File "/usr/lib/python3/dist-packages/urllib3/connectionpool.py", line 346, in _make_request
+    self._validate_conn(conn)
+  File "/usr/lib/python3/dist-packages/urllib3/connectionpool.py", line 852, in _validate_conn
+    conn.connect()
+  File "/usr/lib/python3/dist-packages/urllib3/connection.py", line 298, in connect
+    conn = self._new_conn()
+  File "/usr/lib/python3/dist-packages/urllib3/connection.py", line 153, in _new_conn
+    self, "Failed to establish a new connection: %s" % e)
+urllib3.exceptions.NewConnectionError: <urllib3.connection.VerifiedHTTPSConnection object at 0x7fd282c1b780>: Failed to establish a new connection: [Errno 113] No route to host
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/usr/lib/python3/dist-packages/requests/adapters.py", line 440, in send
+    timeout=timeout
+  File "/usr/lib/python3/dist-packages/urllib3/connectionpool.py", line 639, in urlopen
+    _stacktrace=sys.exc_info()[2])
+  File "/usr/lib/python3/dist-packages/urllib3/util/retry.py", line 398, in increment
+    raise MaxRetryError(_pool, url, error or ResponseError(cause))
+urllib3.exceptions.MaxRetryError: HTTPSConnectionPool(host='hadith.inoor.ir', port=443): Max retries exceeded with url: /service/api/elastic/ElasticHadithById (Caused by NewConnectionError('<urllib3.connection.VerifiedHTTPSConnection object at 0x7fd282c1b780>: Failed to establish a new connection: [Errno 113] No route to host',))
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "api_read.py", line 200, in <module>
+    t , e = get_hadith_data(hadith_id , date)
+  File "api_read.py", line 165, in get_hadith_data
+    resp = get_response(hadith_id,date, data,'data')
+  File "api_read.py", line 124, in get_response
+    proxies=proxies )
+  File "/usr/lib/python3/dist-packages/requests/api.py", line 112, in post
+    return request('post', url, data=data, json=json, **kwargs)
+  File "/usr/lib/python3/dist-packages/requests/api.py", line 58, in request
+    return session.request(method=method, url=url, **kwargs)
+  File "/usr/lib/python3/dist-packages/requests/sessions.py", line 520, in request
+    resp = self.send(prep, **send_kwargs)
+  File "/usr/lib/python3/dist-packages/requests/sessions.py", line 630, in send
+    r = adapter.send(request, **kwargs)
+  File "/usr/lib/python3/dist-packages/requests/adapters.py", line 508, in send
+    raise ConnectionError(e, request=request)
+requests.exceptions.ConnectionError: HTTPSConnectionPool(host='hadith.inoor.ir', port=443): Max retries exceeded with url: /service/api/elastic/ElasticHadithById (Caused by NewConnectionError('<urllib3.connection.VerifiedHTTPSConnection object at 0x7fd282c1b780>: Failed to establish a new connection: [Errno 113] No route to host',))
+@@@Traceback (most recent call last):
+  File "api_read.py", line 199, in <module>
+    t , e = get_hadith_data(hadith_id , date)
+  File "api_read.py", line 165, in get_hadith_data
+    resp = get_response(hadith_id,date, data,'data')
+  File "api_read.py", line 127, in get_response
+    resp = response.json()
+  File "/usr/lib/python3/dist-packages/requests/models.py", line 892, in json
+    return complexjson.loads(self.text, **kwargs)
+  File "/usr/lib/python3.6/json/__init__.py", line 354, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python3.6/json/decoder.py", line 339, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python3.6/json/decoder.py", line 357, in raw_decode
+    raise JSONDecodeError("Expecting value", s, err.value) from None
+json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+@@@

@@ -5,7 +5,7 @@ from time import sleep
 import logging
 import datetime
 import sys
-
+import random
 
 
 
@@ -46,9 +46,9 @@ def exit_if_banned(hadith_id, date ,status_code ):
 
 def save_hadith_data(hadith_id,resp):
     groupTogetherList = resp["groupTogetherList"]
-    for hadith in groupTogetherList:
-        if hadith_id == hadith['hadithId']:
-            break 
+    group_hadithids = [hadith['hadithId'] for hadith in groupTogetherList]
+
+    if not hadith_id in group_hadithids: 
         logging.error(f'hadith id : {hadith_id} is having another url !!')
         return 
     for hadith in groupTogetherList:
@@ -127,9 +127,11 @@ def get_response(hadith_id,date, data , data_type):
     resp = response.json()
 
     if data_type == "data":
+        if  resp["status"] == -2:
+            return -1
         if not resp["isSuccess"]:
             logging.error(f'hadith id : {hadith_id} {date} {data_type} notSuccess')
-            return False , False
+            return {'hasTranslate':False , 'hasExplanation':False}
         try : 
             resp = resp["data"][0]
         except:
@@ -161,6 +163,8 @@ def get_hadith_data(hadith_id, date):
 
     data = '{"hadithId":[' + str(hadith_id) + '],"searchPhrase":""}'
     resp = get_response(hadith_id,date, data,'data')
+    if resp == -1 :
+        return False,False
     save_hadith_data(hadith_id,resp)
     return resp['hasTranslate'] , resp['hasExplanation']
 
@@ -178,20 +182,25 @@ def get_hadith_translation(hadith_id, date):
     
 
 if __name__ == "__main__":
-    hadith_id = 48316
+    hadith_id = 50882
     logging.info(f'new run')
+    cnt = 0
+    power = 6
     while True:
+        if cnt == 49 :
+            sleep(60*60*power)
+            cnt = 0
+            logging.info(f'new run aftrea abreak from 49 ')
         logging.info(f'')
         date = datetime.datetime.now().strftime("%Y%m%d, %H:%M:%S")
         logging.info(f'hadith id : {hadith_id} {date}')
-        
         t , e = get_hadith_data(hadith_id , date)
-
         if t :
             get_hadith_translation(hadith_id, date)
-            sleep(20)
+            sleep(random.randint(60, 90))
         if e :
             get_hadith_explanation(hadith_id, date)
-            sleep(20) 
-        sleep(20)
+            sleep(random.randint(60, 90)) 
+        sleep(random.randint(60, 90))
         hadith_id += 1 
+        cnt += 1
